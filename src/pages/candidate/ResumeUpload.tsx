@@ -51,11 +51,11 @@ export const ResumeUpload: React.FC = () => {
     onSuccess: (_, file) => {
       queryClient.invalidateQueries({ queryKey: ["resumes"] });
       queryClient.invalidateQueries({ queryKey: ["profile", "full"] });
-      setSuccessMessage(`'${file.name}' successfully uploaded to Supabase Storage!`);
+      setSuccessMessage(`'${file.name}' successfully uploaded`);
     },
     onError: (err: any) => {
       setErrorMessage(
-        err?.response?.data?.detail || "Failed to upload file to cloud storage. Please try again."
+        err?.response?.data?.detail || "Failed to upload file. Please try again."
       );
     },
     onSettled: () => {
@@ -199,7 +199,7 @@ export const ResumeUpload: React.FC = () => {
             </div>
             <div>
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                Cohere AI is analyzing your career data...
+                AI is analyzing your career data...
                 <span className="text-[10px] font-semibold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-full border border-orange-500/20">
                   Do not close window
                 </span>
