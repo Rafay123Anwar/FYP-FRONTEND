@@ -42,8 +42,14 @@ export const Login: React.FC = () => {
       await login(data);
       navigate(from, { replace: true });
     } catch (err: any) {
+      const detail = err?.response?.data?.detail;
       const errorMsg =
-        err?.response?.data?.detail || "Invalid email or password. Please check your credentials.";
+        detail ||
+        (err?.message === "Network Error"
+          ? "Network Error: Could not connect to the backend server. Please verify your connection or CORS settings."
+          : err?.response?.status
+          ? `Server error (${err.response.status}): ${err.response.statusText || "Request failed"}`
+          : err?.message || "Invalid email or password. Please check your credentials.");
       setServerError(errorMsg);
     }
   };

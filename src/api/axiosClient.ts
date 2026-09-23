@@ -4,11 +4,25 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
-// const API_BASE_URL =
-//   (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) ||
-//   (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
-//   "http://localhost:8000/api/v1";
-const API_BASE_URL = "http://193.123.87.71:8000/api/v1";
+const getBaseURL = (): string => {
+  // 1. Explicit environment variable if provided
+  if (import.meta.env?.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // 2. On browser in production (e.g. Vercel), route through relative proxy "/api/v1"
+  // This proxies through vercel.json rewrite and avoids browser Mixed Content (HTTPS -> HTTP) blocks
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+  ) {
+    return "/api/v1";
+  }
+  // 3. Local development fallback
+  return "http://localhost:8000/api/v1";
+};
+
+const API_BASE_URL = getBaseURL();
 
 export const axiosClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,

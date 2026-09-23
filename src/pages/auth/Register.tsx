@@ -61,8 +61,14 @@ export const Register: React.FC = () => {
       });
       navigate("/candidate/dashboard", { replace: true });
     } catch (err: any) {
+      const detail = err?.response?.data?.detail;
       const errorMsg =
-        err?.response?.data?.detail || "Registration failed. Please check your information.";
+        detail ||
+        (err?.message === "Network Error"
+          ? "Network Error: Could not connect to the backend server. Please verify your connection or CORS settings."
+          : err?.response?.status
+          ? `Server error (${err.response.status}): ${err.response.statusText || "Registration failed"}`
+          : err?.message || "Registration failed. Please check your information.");
       setServerError(errorMsg);
     }
   };
