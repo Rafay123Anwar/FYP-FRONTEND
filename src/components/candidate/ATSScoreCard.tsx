@@ -143,7 +143,7 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ health }) => {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+    <div className="card-base overflow-hidden">
       {/* Top Banner / Score Summary */}
       <div className="p-6 sm:p-8 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
         {/* Subtle accent glow */}
@@ -211,8 +211,8 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ health }) => {
       </div>
 
       {/* Sub-Score Progress Bars Grid */}
-      <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
+      <div className="p-6 border-b" style={{ borderColor: "var(--color-border)", background: "var(--color-bg)" }}>
+        <h4 className="text-xs font-bold uppercase tracking-wider mb-4" style={{ color: "var(--color-muted)" }}>
           Detailed Dimension Breakdown
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -221,16 +221,17 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ health }) => {
             return (
               <div
                 key={m.label}
-                className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs flex flex-col justify-between"
+                className="p-3.5 rounded-xl border shadow-xs flex flex-col justify-between"
+                style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
               >
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-700 mb-2">
+                <div className="flex items-center justify-between text-xs font-semibold mb-2" style={{ color: "var(--color-text)" }}>
                   <span className="flex items-center gap-1.5 truncate">
-                    <Icon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--color-muted)" }} />
                     {m.label}
                   </span>
-                  <span className="font-bold text-slate-900">{m.score}%</span>
+                  <span className="font-bold">{m.score}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "var(--color-bg)" }}>
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       m.score >= 80 ? "bg-emerald-500" : m.score >= 50 ? "bg-amber-500" : "bg-rose-500"
@@ -253,7 +254,7 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ health }) => {
           </div>
           <div className="space-y-2">
             {strengths.length === 0 ? (
-              <p className="text-xs text-slate-400 italic">No significant strengths detected yet.</p>
+              <p className="text-xs italic" style={{ color: "var(--color-muted)" }}>No significant strengths detected yet.</p>
             ) : (
               strengths.map((str, i) => (
                 <div
@@ -275,7 +276,7 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ health }) => {
           </div>
           <div className="space-y-2">
             {issues.length === 0 ? (
-              <p className="text-xs text-slate-400 italic">No critical formatting issues found.</p>
+              <p className="text-xs italic" style={{ color: "var(--color-muted)" }}>No critical formatting issues found.</p>
             ) : (
               issues.map((iss, i) => (
                 <div
@@ -297,7 +298,7 @@ export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ health }) => {
           </div>
           <div className="space-y-2">
             {suggestions.length === 0 ? (
-              <p className="text-xs text-slate-400 italic">Your CV is well-optimized for parsing!</p>
+              <p className="text-xs italic" style={{ color: "var(--color-muted)" }}>Your CV is well-optimized for parsing!</p>
             ) : (
               suggestions.map((sug, i) => (
                 <div

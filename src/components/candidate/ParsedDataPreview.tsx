@@ -107,9 +107,9 @@ export const ParsedDataPreview: React.FC<ParsedDataPreviewProps> = ({
     data.skills.other.length;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="card-base overflow-hidden">
       {/* Top Candidate Profile Ribbon */}
-      <div className="p-6 bg-slate-50/70 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 border-b flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ borderColor: "var(--color-border)", background: "var(--color-bg)" }}>
         <div>
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-orange-100 text-[#FF6B00]">
@@ -118,7 +118,7 @@ export const ParsedDataPreview: React.FC<ParsedDataPreviewProps> = ({
             <span className="text-xs text-slate-400 font-medium">Evidence Grounded</span>
           </div>
 
-          <h3 className="text-xl font-extrabold text-slate-900 mt-1">
+          <h3 className="text-xl font-extrabold mt-1" style={{ color: "var(--color-text)" }}>
             {data.name || "Candidate Name Not Detected"}
           </h3>
 
@@ -179,7 +179,7 @@ export const ParsedDataPreview: React.FC<ParsedDataPreviewProps> = ({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center border-b border-slate-200 px-6 overflow-x-auto scrollbar-none gap-2 bg-white">
+      <div className="flex items-center border-b px-6 overflow-x-auto scrollbar-none gap-2" style={{ borderColor: "var(--color-border)", background: "var(--color-surface)" }}>
         <button
           onClick={() => setActiveTab("skills")}
           className={`flex items-center gap-2 py-3 px-3 text-xs font-bold border-b-2 transition-colors whitespace-nowrap ${
@@ -251,7 +251,7 @@ export const ParsedDataPreview: React.FC<ParsedDataPreviewProps> = ({
             ) : (
               skillCategories.map((cat) => (
                 <div key={cat.title} className="space-y-2.5">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider" style={{ color: "var(--color-muted)" }}>
                     {cat.title} ({cat.skills.length})
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -279,10 +279,11 @@ export const ParsedDataPreview: React.FC<ParsedDataPreviewProps> = ({
               data.projects.map((proj, idx) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-xl border border-slate-200/90 bg-white hover:border-orange-200 transition-all shadow-xs space-y-3"
+                  className="p-5 rounded-xl border hover:border-orange-200 transition-all shadow-xs space-y-3"
+                  style={{ borderColor: "var(--color-border)", background: "var(--color-surface)" }}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <h4 className="text-sm font-bold text-slate-900">{proj.name}</h4>
+                    <h4 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{proj.name}</h4>
                     {proj.technologies && proj.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {proj.technologies.map((t, ti) => (
@@ -333,12 +334,13 @@ export const ParsedDataPreview: React.FC<ParsedDataPreviewProps> = ({
               data.experience.map((exp, idx) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-xl border border-slate-200/90 bg-white hover:border-orange-200 transition-all shadow-xs space-y-3"
+                  className="p-5 rounded-xl border hover:border-orange-200 transition-all shadow-xs space-y-3"
+                  style={{ borderColor: "var(--color-border)", background: "var(--color-surface)" }}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900">{exp.job_title}</h4>
-                      <div className="text-xs text-slate-600 font-medium">{exp.company} {exp.location && `• ${exp.location}`}</div>
+                      <h4 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{exp.job_title}</h4>
+                      <div className="text-xs font-medium" style={{ color: "var(--color-muted)" }}>{exp.company} {exp.location && `• ${exp.location}`}</div>
                     </div>
                     {(exp.start_date || exp.end_date) && (
                       <span className="text-xs font-semibold text-slate-400">
@@ -394,12 +396,13 @@ export const ParsedDataPreview: React.FC<ParsedDataPreviewProps> = ({
               data.education.map((edu, idx) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-xl border border-slate-200/90 bg-white hover:border-orange-200 transition-all shadow-xs space-y-3"
+                  className="p-5 rounded-xl border hover:border-orange-200 transition-all shadow-xs space-y-3"
+                  style={{ borderColor: "var(--color-border)", background: "var(--color-surface)" }}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900">{edu.degree}</h4>
-                      <div className="text-xs text-slate-600 font-medium">
+                      <h4 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{edu.degree}</h4>
+                      <div className="text-xs font-medium" style={{ color: "var(--color-muted)" }}>
                         {edu.institution} {edu.location && `• ${edu.location}`}
                       </div>
                     </div>
