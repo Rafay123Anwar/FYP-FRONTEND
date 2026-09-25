@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,7 @@ import { Sparkles, Mail, Lock, AlertCircle, ArrowRight, CheckCircle2, ShieldChec
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { prewarmBackend } from "@/api/axiosClient";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
@@ -23,6 +24,12 @@ export const Login: React.FC = () => {
   const from = location.state?.from?.pathname || "/candidate/dashboard";
 
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // Pre-warm the backend as soon as the login page renders so the
+  // server is ready before the user clicks "Sign In".
+  useEffect(() => {
+    prewarmBackend();
+  }, []);
 
   const {
     register,
@@ -108,9 +115,9 @@ export const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Panel: Clean White Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200/80 shadow-elevated p-8 sm:p-10">
+      {/* Right Panel: Clean Auth Form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12" style={{ background: "var(--color-bg)" }}>
+        <div className="w-full max-w-md card-base p-8 sm:p-10 animate-fade-in-up">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-orange-50 text-[#FF6B00] mb-3">
               <Lock className="w-6 h-6" />

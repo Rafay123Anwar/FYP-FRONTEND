@@ -29,8 +29,25 @@ export const axiosClient: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 120000,
+  timeout: 30000, // 30s default — fail fast, not 2-minute hang
 });
+
+/**
+ * Pre-warm the backend so the first real request (login/register)
+ * doesn't suffer a cold-start penalty. Fire-and-forget, ignores errors.
+ * Uses raw axios (not axiosClient) to bypass the 401 interceptor
+ * which would otherwise wipe localStorage tokens.
+ */
+export const prewarmBackend = (): void => {
+  // Build the full URL from the base — on Vercel this becomes /api/v1/auth/me
+  // which is rewritten by vercel.json to the real backend.
+  const url = API_BASE_URL.startsWith("/")
+    ? `${window.location.origin}${API_BASE_URL}/auth/me`
+    : `${API_BASE_URL}/auth/me`;
+  axios
+    .get(url, { timeout: 8000 })
+    .catch(() => { /* silent — 401/network is expected, just warming up */ });
+};
 
 // Request Interceptor: Attach JWT Token from localStorage
 axiosClient.interceptors.request.use(

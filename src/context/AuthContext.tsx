@@ -67,8 +67,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (credentials: UserLogin) => {
     const res = await loginUser(credentials);
+    // Set token in state immediately
     setToken(res.access_token);
-    await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    // Eagerly fetch /auth/me and seed the cache so ProtectedRoute
+    // sees isAuthenticated=true *before* navigate() is called.
+    // This prevents the first-login redirect-back-to-login race condition.
+    try {
+      const me = await getCurrentUser();
+      queryClient.setQueryData(["auth", "me"], me);
+    } catch {
+      // If /auth/me fails immediately, invalidate so it retries
+      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    }
   };
 
   const register = async (data: UserCreate) => {

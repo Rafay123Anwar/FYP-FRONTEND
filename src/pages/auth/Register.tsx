@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/api/auth";
+import { prewarmBackend } from "@/api/axiosClient";
 
 const registerSchema = z
   .object({
@@ -30,6 +31,11 @@ export const Register: React.FC = () => {
   const { register: registerAuth } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // Pre-warm backend on mount to reduce cold-start latency
+  useEffect(() => {
+    prewarmBackend();
+  }, []);
 
   const {
     register,

@@ -3,67 +3,40 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  User,
-  GraduationCap,
-  Briefcase,
-  Code2,
-  Plus,
-  Trash2,
-  Check,
-  AlertCircle,
-  Building2,
-  MapPin,
-  Calendar,
-  Globe,
-  Linkedin,
-  Github,
-  Loader2,
+  User, GraduationCap, Briefcase, Code2, Plus, Trash2, Check,
+  Building2, MapPin, Calendar, Globe, Linkedin, Github, Loader2,
 } from "lucide-react";
 import {
-  addSkill,
-  createEducation,
-  createExperience,
-  deleteEducation,
-  deleteExperience,
-  deleteSkill,
-  getFullCandidateProfile,
-  upsertProfile,
-  type CandidateFullProfileOut,
-  type CandidateSkillOut,
-  type EducationOut,
-  type ExperienceOut,
+  addSkill, createEducation, createExperience, deleteEducation,
+  deleteExperience, deleteSkill, getFullCandidateProfile, upsertProfile,
+  type CandidateFullProfileOut, type CandidateSkillOut,
+  type EducationOut, type ExperienceOut,
 } from "@/api/profile";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
+import { ProfileSkeleton } from "@/components/ui/Skeleton";
+import { useToast } from "@/components/ui/Toast";
 import { SearchableCombobox } from "@/components/ui/SearchableCombobox";
 import { SkillsSelect } from "@/components/ui/SkillsSelect";
 import { PAKISTANI_CITIES, PAKISTANI_UNIVERSITIES } from "@/lib/constants/pakistanData";
 import {
-  profileValidationSchema,
-  educationValidationSchema,
-  experienceValidationSchema,
-  type ProfileFormValues,
-  type EducationFormValues,
-  type ExperienceFormValues,
+  profileValidationSchema, educationValidationSchema, experienceValidationSchema,
+  type ProfileFormValues, type EducationFormValues, type ExperienceFormValues,
 } from "@/lib/validations/profile";
 
 export const ProfileBuilder: React.FC = () => {
   const queryClient = useQueryClient();
+  const toast = useToast();
 
-  // Deduplicated candidate full profile query
-  const {
-    data: fullProfile,
-    isLoading,
-    isFetching,
-  } = useQuery<CandidateFullProfileOut | null>({
+  const { data: fullProfile, isLoading, isFetching } = useQuery<CandidateFullProfileOut | null>({
     queryKey: ["profile", "full"],
     queryFn: getFullCandidateProfile,
     staleTime: 5 * 60 * 1000,
   });
 
   const [activeTab, setActiveTab] = useState<"basic" | "education" | "experience" | "skills">("basic");
-  const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Profile entities
   const [educations, setEducations] = useState<EducationOut[]>(fullProfile?.educations || []);
@@ -156,8 +129,8 @@ export const ProfileBuilder: React.FC = () => {
   }, [fullProfile, resetProfile]);
 
   const showNotification = (type: "success" | "error", text: string) => {
-    setStatusMessage({ type, text });
-    setTimeout(() => setStatusMessage(null), 4000);
+    if (type === "success") toast.success(text);
+    else toast.error(text);
   };
 
   // 1. Profile Overview Mutation
@@ -356,14 +329,7 @@ export const ProfileBuilder: React.FC = () => {
     return d.toISOString().split("T")[0];
   })();
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-[#FF6B00]" />
-        <p className="text-sm font-medium text-slate-500">Loading candidate profile...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <ProfileSkeleton />;
 
   return (
     <div className="space-y-8">
@@ -384,26 +350,8 @@ export const ProfileBuilder: React.FC = () => {
         </div>
       </div>
 
-      {/* Global Status Notification */}
-      {statusMessage && (
-        <div
-          className={`p-4 rounded-xl text-sm font-medium flex items-center gap-3 transition-all ${
-            statusMessage.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-              : "bg-rose-50 text-rose-800 border border-rose-200"
-          }`}
-        >
-          {statusMessage.type === "success" ? (
-            <Check className="w-5 h-5 text-emerald-600 shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
-          )}
-          <span>{statusMessage.text}</span>
-        </div>
-      )}
-
-      {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100/80 rounded-xl max-w-fit border border-slate-200/60">
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap gap-1.5 p-1.5 rounded-xl bg-slate-200/50 dark:bg-slate-800/60 border max-w-fit" style={{ borderColor: "var(--color-border)" }}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -411,18 +359,15 @@ export const ProfileBuilder: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 ${
-                isActive
-                  ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
-              }`}
+              className={`tab-item ${isActive ? "active" : ""}`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? "text-[#FF6B00]" : ""}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-500 dark:text-slate-400"}`} />
               <span>{tab.label}</span>
             </button>
           );
         })}
       </div>
+
 
       {/* Tab 1: Basic Info */}
       {activeTab === "basic" && (
