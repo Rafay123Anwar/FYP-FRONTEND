@@ -144,3 +144,15 @@ export async function parseResumeText(text: string): Promise<ParsedResumeOut> {
   );
   return res.data;
 }
+
+/**
+ * Generate a professional headline using AI based on existing profile data.
+ */
+export async function generateProfessionalHeadline(profileData: any): Promise<string> {
+  const res = await axiosClient.post<{ headline: string }>(
+    "/ai/generate-headline",
+    { profile_data: profileData },
+    { timeout: 60000 }
+  );
+  return res.data.headline;
+}

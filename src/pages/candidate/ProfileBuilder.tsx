@@ -4,8 +4,9 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   User, GraduationCap, Briefcase, Code2, Plus, Trash2, Check,
-  Building2, MapPin, Calendar, Globe, Linkedin, Github, Loader2,
+  Building2, MapPin, Calendar, Globe, Linkedin, Github, Loader2, Sparkles,
 } from "lucide-react";
+import { generateProfessionalHeadline } from "@/api/ai";
 import {
   addSkill, createEducation, createExperience, deleteEducation,
   deleteExperience, deleteSkill, getFullCandidateProfile, upsertProfile,
@@ -43,13 +44,13 @@ export const ProfileBuilder: React.FC = () => {
   const [experiences, setExperiences] = useState<ExperienceOut[]>(fullProfile?.experiences || []);
   const [skills, setSkills] = useState<CandidateSkillOut[]>(fullProfile?.skills || []);
 
-  // 1. Profile Form
   const {
     register: regProfile,
     handleSubmit: submitProfile,
     reset: resetProfile,
     control: controlProfile,
-    formState: { errors: profileErrors, isSubmitting: isProfileSubmitting },
+    watch: watchProfile,
+    formState: { errors: profileErrors, isSubmitting: isProfileSubmitting, isDirty: isProfileDirty },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileValidationSchema),
     defaultValues: {
@@ -194,6 +195,26 @@ export const ProfileBuilder: React.FC = () => {
     };
     upsertMutation.mutate(cleanData);
   };
+
+  const [isGeneratingHeadline, setIsGeneratingHeadline] = useState(false);
+
+  const handleAutoGenerateHeadline = async () => {
+    if (!fullProfile) return;
+    try {
+      setIsGeneratingHeadline(true);
+      const generatedHeadline = await generateProfessionalHeadline(fullProfile);
+      resetProfile({
+        ...watchProfile(), // Keep current values for other fields
+        headline: generatedHeadline,
+      });
+      showNotification("success", "AI generated a professional headline!");
+    } catch (err: any) {
+      showNotification("error", "Failed to generate headline: " + (err?.response?.data?.detail || "Unknown error"));
+    } finally {
+      setIsGeneratingHeadline(false);
+    }
+  };
+
 
   // 2. Education Mutations
   const addEducationMutation = useMutation({
@@ -380,13 +401,32 @@ export const ProfileBuilder: React.FC = () => {
           </CardHeader>
 
           <form onSubmit={submitProfile(onSaveProfile)} className="space-y-5">
-            <Input
-              label="Professional Headline"
-              placeholder="e.g. Senior Full-Stack Engineer | Python & React"
-              helperText="Brief statement summarizing your primary role and expertise"
-              error={profileErrors.headline?.message}
-              {...regProfile("headline")}
-            />
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--color-muted)" }}>
+                  Professional Headline
+                </label>
+                <button
+                  type="button"
+                  onClick={handleAutoGenerateHeadline}
+                  disabled={isGeneratingHeadline || !fullProfile}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF6B00] hover:text-[#EA580C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isGeneratingHeadline ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-3.5 h-3.5" />
+                  )}
+                  Auto-Generate
+                </button>
+              </div>
+              <Input
+                placeholder="e.g. Senior Full-Stack Engineer | Python & React"
+                helperText="Brief statement summarizing your primary role and expertise"
+                error={profileErrors.headline?.message}
+                {...regProfile("headline")}
+              />
+            </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
@@ -454,7 +494,12 @@ export const ProfileBuilder: React.FC = () => {
             </div>
 
             <div className="pt-4 flex justify-end">
-              <Button type="submit" size="md" isLoading={isProfileSubmitting || upsertMutation.isPending}>
+              <Button 
+                type="submit" 
+                size="md" 
+                disabled={!isProfileDirty}
+                isLoading={isProfileSubmitting || upsertMutation.isPending}
+              >
                 Save Changes
               </Button>
             </div>
