@@ -50,6 +50,7 @@ export const ProfileBuilder: React.FC = () => {
     reset: resetProfile,
     control: controlProfile,
     watch: watchProfile,
+    setValue: setProfileValue,
     formState: { errors: profileErrors, isSubmitting: isProfileSubmitting, isDirty: isProfileDirty },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileValidationSchema),
@@ -203,10 +204,7 @@ export const ProfileBuilder: React.FC = () => {
     try {
       setIsGeneratingHeadline(true);
       const generatedHeadline = await generateProfessionalHeadline(fullProfile);
-      resetProfile({
-        ...watchProfile(), // Keep current values for other fields
-        headline: generatedHeadline,
-      });
+      setProfileValue("headline", generatedHeadline, { shouldDirty: true, shouldValidate: true });
       showNotification("success", "AI generated a professional headline!");
     } catch (err: any) {
       showNotification("error", "Failed to generate headline: " + (err?.response?.data?.detail || "Unknown error"));
